@@ -2,7 +2,6 @@ import logging
 
 from lxml import etree
 
-# IMPORTANT: new transformer file
 from app.transformers.ampla_to_b2mml import AmplaTransformer
 from app.validators import validate_model
 

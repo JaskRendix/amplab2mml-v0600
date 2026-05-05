@@ -21,7 +21,6 @@ from app.schemas import DiffResponse, HealthResponse, ModelResponse, StatsRespon
 from app.stats import compute_stats
 from app.validators import validate_model
 
-# IMPORTANT: new package name
 PIPELINE_VERSION = version("ampla-b2mml-v0600")
 
 

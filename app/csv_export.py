@@ -27,7 +27,6 @@ def export_equipment_csv(model: dict) -> str:
     buf = StringIO()
     writer = csv.writer(buf)
 
-    # NEW: include UoM columns
     header = ["full_name", "level", "class_ids"]
     for name in prop_names:
         header.append(name)  # value
@@ -70,7 +69,6 @@ def export_classes_csv(model: dict) -> str:
     buf = StringIO()
     writer = csv.writer(buf)
 
-    # NEW: include UoM columns
     header = ["name", "parent"]
     for name in prop_names:
         header.append(name)

@@ -319,7 +319,6 @@ def _render_equipment_node(eq) -> str:
     for cid in eq.class_ids:
         badges += f' <span class="badge badge-class">{_esc(cid)}</span>'
 
-    # NEW: include UoM in property table
     props_html = ""
     if has_props:
         rows = "".join(
@@ -360,7 +359,6 @@ def _render_equipment_node(eq) -> str:
 def _render_classes(classes) -> str:
     rows = []
     for cls in classes:
-        # NEW: include UoM in class property pills
         pills = "".join(
             f'<span class="prop-pill">'
             f"{_esc(p.name)}: <span>{_esc(p.value)}</span>"

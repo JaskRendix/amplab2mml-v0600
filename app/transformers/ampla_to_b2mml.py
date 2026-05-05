@@ -159,7 +159,6 @@ class AmplaTransformer:
 
         # hierarchy validation unchanged...
 
-        # FIX: warn on unknown classDefinitionId
         class_ids = []
         for a in node.xpath("ItemClassAssociation"):
             cid = a.get("classDefinitionId")

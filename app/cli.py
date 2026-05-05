@@ -13,7 +13,6 @@ from app.pipeline import InvalidXML, run_pipeline_from_file
 from app.stats import compute_stats
 from app.validators import validate_model
 
-# IMPORTANT: new package name
 CLI_VERSION = version("ampla-b2mml-v0600")
 
 logging.basicConfig(level=logging.ERROR, format="%(levelname)s: %(message)s")

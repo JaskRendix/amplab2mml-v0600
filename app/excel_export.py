@@ -51,7 +51,6 @@ def _write_equipment_sheet(wb: Workbook, model: dict):
                 prop_names.append(p.name)
                 seen.add(p.name)
 
-    # NEW: include UoM columns
     headers = ["full_name", "level", "class_ids"]
     for name in prop_names:
         headers.append(name)  # value
@@ -94,7 +93,6 @@ def _write_classes_sheet(wb: Workbook, model: dict):
                 prop_names.append(p.name)
                 seen.add(p.name)
 
-    # NEW: include UoM columns
     headers = ["name", "parent"]
     for name in prop_names:
         headers.append(name)
