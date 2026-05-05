@@ -1,0 +1,70 @@
+# Ampla → B2MML Mapping Configuration
+# -----------------------------------
+# Maps Ampla internal folder types to ISA‑95 EquipmentElementLevel values.
+# This file allows integrators to adjust behaviour without modifying code.
+
+[level_map]
+# Maps Ampla Internal Types to ISA‑95 Equipment Element Levels
+"Citect.Ampla.Isa95.EnterpriseFolder" = "Enterprise"
+"Citect.Ampla.Isa95.SiteFolder"       = "Site"
+"Citect.Ampla.Isa95.AreaFolder"       = "Area"
+"Citect.Ampla.General.Server.ApplicationsFolder" = "Other"
+
+[hierarchy]
+# ISA‑95 Structural Validation Rules
+# Defines which child levels are legally allowed under a parent level
+"Enterprise" = ["Enterprise", "Site"]
+"Site"       = ["Area"]
+"Area"       = ["WorkCenter", "ProcessCell", "ProductionLine", "Other"]
+"Other"      = ["Other"]
+
+[properties]
+# Cleanup rules to ensure the B2MML model remains "Pure"
+strip_prefixes = ["Class.", "Local.", "Global.", "Reporting."]
+
+# Properties to ignore (technical metadata that doesn't belong in B2MML)
+exclude = [
+    "IsSelected",
+    "Color",
+    "HelpContextID",
+    "DisplayOrder",
+    "Locked",
+    "Owner",
+    "SequenceID"
+]
+
+# Optional: rename properties for cleaner B2MML output
+# "FeedRate" = "Feed_Rate"
+# "TempSP"   = "Temperature_Setpoint"
+rename = {}
+
+# Optional: enforce required properties (schema‑level expectations)
+required = ["ID", "EquipmentElementLevel"]
+
+[datatypes]
+# Maps Ampla/System types to B2MML Property Data Types
+"System.String"   = "string"
+"System.Int32"    = "int"
+"System.Double"   = "float"
+"System.Boolean"  = "boolean"
+"System.DateTime" = "datetime"
+"System.Decimal"  = "decimal"
+
+# Fallback if datatype is unknown
+fallback = "string"
+
+[uom_map]
+# Industrial Unit Standardization (Standardizes common shorthand)
+"kgs"  = "kilogram"
+"kg"   = "kilogram"
+"t"    = "tonne"
+"m3"   = "cubic meter"
+"degC" = "degree Celsius"
+"pct"  = "percent"
+"hrs"  = "hour"
+
+[metadata]
+# B2MML Header info
+version   = "V0600"
+namespace = "http://www.mesa.org/xml/B2MML-V0600"
+
