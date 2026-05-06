@@ -46,7 +46,12 @@ def export_equipment_csv(model: dict) -> str:
             prop = prop_map.get(name)
             if prop:
                 row.append("" if prop.value is None else prop.value)
-                row.append(prop.unit_of_measure or "")
+                uom = (
+                    prop.normalized_unit_of_measure
+                    if getattr(prop, "normalized_unit_of_measure", None)
+                    else prop.unit_of_measure
+                )
+                row.append(uom or "")
             else:
                 row.extend(["", ""])
 
@@ -84,7 +89,12 @@ def export_classes_csv(model: dict) -> str:
             prop = prop_map.get(name)
             if prop:
                 row.append("" if prop.value is None else prop.value)
-                row.append(prop.unit_of_measure or "")
+                uom = (
+                    prop.normalized_unit_of_measure
+                    if getattr(prop, "normalized_unit_of_measure", None)
+                    else prop.unit_of_measure
+                )
+                row.append(uom or "")
             else:
                 row.extend(["", ""])
 

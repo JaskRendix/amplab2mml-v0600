@@ -87,3 +87,88 @@ def test_transformer_unknown_class_warning(make_model):
     assert "warnings" in model
     assert len(model["warnings"]) == 1
     assert "999" in model["warnings"][0]
+
+
+def test_uom_unknown_in_equipment_triggers_warning():
+    from app.models.equipment import Equipment
+    from app.models.properties import EquipmentProperty
+    from app.validators import validate_model
+
+    eq = Equipment(
+        id="1",
+        name="Mine",
+        level="Enterprise",
+        full_name="Mine",
+        class_ids=[],
+        properties=[
+            EquipmentProperty(
+                name="Flow",
+                value=10,
+                unit_of_measure="foo",
+                raw_unit_of_measure="foo",
+                normalized_unit_of_measure=None,
+                uom_warning="Unknown UoM 'foo'",
+            )
+        ],
+    )
+    model = {"equipment": [eq], "classes": [], "warnings": []}
+
+    warnings = validate_model(model)
+    assert any("Unknown UoM" in w for w in warnings)
+    assert any("foo" in w for w in warnings)
+
+
+def test_uom_invalid_when_disallowed():
+    from app.models.equipment import Equipment
+    from app.models.properties import EquipmentProperty
+    from app.validators import validate_model
+
+    eq = Equipment(
+        id="1",
+        name="Mine",
+        level="Enterprise",
+        full_name="Mine",
+        class_ids=[],
+        properties=[
+            EquipmentProperty(
+                name="Speed",
+                value=5,
+                unit_of_measure="???",
+                raw_unit_of_measure="???",
+                normalized_unit_of_measure=None,
+                uom_warning="Invalid UoM '???'",
+            )
+        ],
+    )
+    model = {"equipment": [eq], "classes": [], "warnings": []}
+
+    warnings = validate_model(model)
+    assert any("Invalid UoM" in w for w in warnings)
+
+
+def test_uom_known_no_warning():
+    from app.models.equipment import Equipment
+    from app.models.properties import EquipmentProperty
+    from app.validators import validate_model
+
+    eq = Equipment(
+        id="1",
+        name="Mine",
+        level="Enterprise",
+        full_name="Mine",
+        class_ids=[],
+        properties=[
+            EquipmentProperty(
+                name="Mass",
+                value=100,
+                unit_of_measure="t",
+                raw_unit_of_measure="t",
+                normalized_unit_of_measure="tonne",
+                uom_warning=None,
+            )
+        ],
+    )
+    model = {"equipment": [eq], "classes": [], "warnings": []}
+
+    warnings = validate_model(model)
+    assert warnings == []

@@ -325,7 +325,7 @@ def _render_equipment_node(eq) -> str:
             f"<tr>"
             f"<td>{_esc(p.name)}</td>"
             f"<td>{_esc(p.value)}</td>"
-            f"<td>{_esc(p.unit_of_measure or '')}</td>"
+            f"<td>{_esc(p.normalized_unit_of_measure or p.unit_of_measure or '')}</td>"
             f"</tr>"
             for p in eq.properties
         )
@@ -359,13 +359,18 @@ def _render_equipment_node(eq) -> str:
 def _render_classes(classes) -> str:
     rows = []
     for cls in classes:
-        pills = "".join(
-            f'<span class="prop-pill">'
-            f"{_esc(p.name)}: <span>{_esc(p.value)}</span>"
-            f'{" [" + _esc(p.unit_of_measure) + "]" if p.unit_of_measure else ""}'
-            f"</span>"
-            for p in cls.properties
-        )
+        pills_parts = []
+        for p in cls.properties:
+            uom = p.normalized_unit_of_measure or p.unit_of_measure
+            uom_html = f" [{_esc(uom)}]" if uom else ""
+            pills_parts.append(
+                f'<span class="prop-pill">'
+                f"{_esc(p.name)}: <span>{_esc(p.value)}</span>"
+                f"{uom_html}"
+                f"</span>"
+            )
+        pills = "".join(pills_parts)
+
         rows.append(
             f'<tr class="cls-row">'
             f"<td>{_esc(cls.name)}</td>"
@@ -373,6 +378,7 @@ def _render_classes(classes) -> str:
             f"<td>{pills}</td>"
             f"</tr>"
         )
+
     return "".join(rows)
 
 

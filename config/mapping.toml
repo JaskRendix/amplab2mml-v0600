@@ -53,15 +53,13 @@ required = ["ID", "EquipmentElementLevel"]
 # Fallback if datatype is unknown
 fallback = "string"
 
-[uom_map]
-# Industrial Unit Standardization (Standardizes common shorthand)
-"kgs"  = "kilogram"
-"kg"   = "kilogram"
-"t"    = "tonne"
-"m3"   = "cubic meter"
-"degC" = "degree Celsius"
-"pct"  = "percent"
-"hrs"  = "hour"
+[uom.map]
+tonne = ["t"]
+kilogram = ["kg", "kgs"]
+"cubic meter" = ["m3"]
+"degree Celsius" = ["degC"]
+percent = ["pct"]
+hour = ["hrs"]
 
 [metadata]
 # B2MML Header info

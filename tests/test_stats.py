@@ -112,3 +112,54 @@ def test_cli_stats():
     )
     assert result.returncode == 0
     assert "Equipment nodes" in result.stdout
+
+
+def test_stats_collects_uom_usage(make_model):
+    xml = """
+    <Ampla>
+      <Item id="1" name="Mine" type="Citect.Ampla.Isa95.EnterpriseFolder">
+        <Property name="Mass" unitOfMeasure="t">10</Property>
+      </Item>
+      <ClassDefinitions/>
+    </Ampla>
+    """
+    model = make_model(xml)
+    stats = compute_stats(model)
+
+    assert stats.uom_usage  # canonical
+    assert "tonne" in stats.uom_usage
+    assert stats.uom_usage["tonne"] == 1
+
+
+def test_stats_collects_unknown_uom(make_model):
+    xml = """
+    <Ampla>
+      <Item id="1" name="Mine" type="Citect.Ampla.Isa95.EnterpriseFolder">
+        <Property name="Speed" unitOfMeasure="foo">5</Property>
+      </Item>
+      <ClassDefinitions/>
+    </Ampla>
+    """
+    model = make_model(xml)
+    stats = compute_stats(model)
+
+    assert stats.uom_unknown
+    assert "foo" in stats.uom_unknown
+    assert stats.uom_unknown["foo"] == 1
+
+
+def test_stats_collects_raw_uom(make_model):
+    xml = """
+    <Ampla>
+      <Item id="1" name="Mine" type="Citect.Ampla.Isa95.EnterpriseFolder">
+        <Property name="Length" unitOfMeasure="m">5</Property>
+      </Item>
+      <ClassDefinitions/>
+    </Ampla>
+    """
+    model = make_model(xml)
+    stats = compute_stats(model)
+
+    assert stats.uom_raw_usage
+    assert "m" in stats.uom_raw_usage
+    assert stats.uom_raw_usage["m"] == 1

@@ -8,6 +8,7 @@ from lxml import etree
 from app.models.classes import EquipmentClass
 from app.models.equipment import Equipment
 from app.models.properties import ClassProperty, EquipmentProperty
+from app.uom import build_uom_config, normalize_uom
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,7 @@ class TransformationContext:
 class AmplaTransformer:
     def __init__(self, config_path: str = "config/mapping.toml"):
         self.config = self._load_config(config_path)
+        self.uom_config = build_uom_config(self.config)
 
     def _load_config(self, path: str) -> dict:
         """Load full v0600 config with safe defaults."""
@@ -65,6 +67,8 @@ class AmplaTransformer:
         self._compute_full_names(equipment, None)
         self._merge_properties(equipment, classes)
 
+        self._normalize_uom(classes, equipment, ctx)
+
         return {
             "equipment": equipment,
             "classes": classes,
@@ -93,7 +97,7 @@ class AmplaTransformer:
                         description=p.get("description"),
                         value=p.text,
                         datatype=self._translate_datatype(p.get("type")),
-                        unit_of_measure=uom_map.get(p.get("uom"), p.get("uom")),
+                        unit_of_measure=p.get("uom"),
                     )
                     for p in node.xpath("PropertyDefinition")
                 ]
@@ -125,7 +129,7 @@ class AmplaTransformer:
                 description=p.get("description"),
                 value=p.text,
                 datatype=self._translate_datatype(p.get("type")),
-                unit_of_measure=uom_map.get(p.get("uom"), p.get("uom")),
+                unit_of_measure=p.get("uom"),
             )
             for p in node.xpath("PropertyDefinition")
         ]
@@ -173,7 +177,10 @@ class AmplaTransformer:
             name=node.get("name", ""),
             level=level,
             class_ids=class_ids,
-            overrides={p.get("name"): p.text for p in node.xpath("Property")},
+            overrides={
+                p.get("name"): {"value": p.text, "uom": p.get("unitOfMeasure")}
+                for p in node.xpath("Property")
+            },
             children=[
                 c
                 for n in node.xpath("Item")
@@ -200,40 +207,82 @@ class AmplaTransformer:
         def process(eq: Equipment):
             merged: dict[str, EquipmentProperty] = {}
 
-            # Inherit class properties
+            # 1. Inherit class properties
             for class_name in eq.class_ids:
                 if cls := class_lookup.get(class_name):
                     for ancestor in cls.inheritance_chain:
                         for p in ancestor.properties:
                             fname = clean_name(p.name)
-                            if fname not in exclude:
-                                merged[fname] = EquipmentProperty(
-                                    name=fname,
-                                    value=p.value,
-                                    datatype=p.datatype,
-                                    unit_of_measure=p.unit_of_measure,
-                                )
+                            if fname in exclude:
+                                continue
+                            merged[fname] = EquipmentProperty(
+                                name=fname,
+                                value=p.value,
+                                datatype=p.datatype,
+                                unit_of_measure=p.unit_of_measure,
+                            )
 
-            # Apply overrides
-            for k, v in eq.overrides.items():
+            # 2. Apply overrides
+            for k, ov in (eq.overrides or {}).items():
                 fname = clean_name(k)
                 if fname in exclude:
                     continue
+
+                # ov is ALWAYS OverrideValue now
+                value = ov.value
+                uom = ov.uom
+
                 if fname in merged:
-                    merged[fname].value = v
+                    merged[fname].value = value
+                    if uom is not None:
+                        merged[fname].unit_of_measure = uom
                 else:
                     merged[fname] = EquipmentProperty(
-                        name=fname, value=v, datatype="string"
+                        name=fname,
+                        value=value,
+                        datatype=ov.datatype or "string",
+                        unit_of_measure=uom,
                     )
 
-            eq.properties = list(merged.values())
-            eq.properties.sort(key=lambda p: p.name)
+            eq.properties = sorted(merged.values(), key=lambda p: p.name)
 
             for child in eq.children:
                 process(child)
 
         for e in equipment:
             process(e)
+
+    def _normalize_uom(self, classes, equipment, ctx):
+        # Normalize class properties
+        for cls in classes:
+            for p in cls.properties:
+                raw = p.unit_of_measure
+                canonical, warn = normalize_uom(raw, self.uom_config)
+                p.raw_unit_of_measure = raw
+                p.normalized_unit_of_measure = canonical
+                if warn:
+                    p.uom_warning = warn
+                    ctx.warnings.append(
+                        f"[UoM] Class '{cls.name}' property '{p.name}': {warn}"
+                    )
+
+        # Normalize equipment properties
+        def walk(eq):
+            for p in eq.properties:
+                raw = p.unit_of_measure
+                canonical, warn = normalize_uom(raw, self.uom_config)
+                p.raw_unit_of_measure = raw
+                p.normalized_unit_of_measure = canonical
+                if warn:
+                    p.uom_warning = warn
+                    ctx.warnings.append(
+                        f"[UoM] Equipment '{eq.full_name or eq.id}' property '{p.name}': {warn}"
+                    )
+            for c in eq.children:
+                walk(c)
+
+        for e in equipment:
+            walk(e)
 
     def _translate_datatype(self, dt: str | None) -> str:
         mapping = self.config.get("datatypes", {})

@@ -3,6 +3,12 @@ from pydantic import BaseModel
 from .properties import EquipmentProperty
 
 
+class OverrideValue(BaseModel):
+    value: str | None = None
+    uom: str | None = None
+    datatype: str | None = None
+
+
 class Equipment(BaseModel):
     id: str
     name: str | None = None
@@ -13,4 +19,4 @@ class Equipment(BaseModel):
     properties: list[EquipmentProperty] = []
     children: list["Equipment"] = []
 
-    overrides: dict[str, str] | None = None
+    overrides: dict[str, OverrideValue] = {}

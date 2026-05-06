@@ -88,9 +88,11 @@ def build_property(tag, prop, config):
     # DataType
     etree.SubElement(val_wrap, "DataType").text = prop.datatype or "string"
 
-    # UnitOfMeasure
-    uom_map = config.get("uom_map", {})
-    uom = uom_map.get(prop.unit_of_measure, prop.unit_of_measure)
+    uom = (
+        prop.normalized_unit_of_measure
+        if getattr(prop, "normalized_unit_of_measure", None)
+        else prop.unit_of_measure
+    )
     etree.SubElement(val_wrap, "UnitOfMeasure").text = uom or ""
 
     return p_el
