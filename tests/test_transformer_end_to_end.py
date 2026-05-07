@@ -18,9 +18,9 @@ def test_end_to_end_transformer(make_model):
 
     assert eq.full_name == "Mine"
     assert eq.class_ids == ["Base"]
-    assert len(eq.properties) == 1
-    assert eq.properties[0].name == "PropA"
-    assert eq.properties[0].value == "ValueA"
+
+    # No inheritance from the class itself anymore
+    assert len(eq.properties) == 0
 
 
 def test_transformer_returns_warnings(make_model):

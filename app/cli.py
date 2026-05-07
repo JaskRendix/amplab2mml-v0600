@@ -19,7 +19,20 @@ logging.basicConfig(level=logging.ERROR, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def model_to_json(model) -> dict[str, Any]:
+def model_to_json(model: dict[str, Any]) -> dict[str, Any]:
+    def prop_to_dict(p) -> dict[str, Any]:
+        return {
+            "name": p.name,
+            "value": p.value,
+            "datatype": getattr(p, "datatype", None),
+            "unit_of_measure": getattr(p, "unit_of_measure", None),
+            "raw_unit_of_measure": getattr(p, "raw_unit_of_measure", None),
+            "normalized_unit_of_measure": getattr(
+                p, "normalized_unit_of_measure", None
+            ),
+            "source": getattr(p, "source", None),
+        }
+
     def eq_to_dict(eq) -> dict[str, Any]:
         return {
             "id": eq.id,
@@ -27,15 +40,7 @@ def model_to_json(model) -> dict[str, Any]:
             "level": eq.level,
             "full_name": eq.full_name,
             "class_ids": eq.class_ids,
-            "properties": [
-                {
-                    "name": p.name,
-                    "value": p.value,
-                    "datatype": p.datatype,
-                    "unit_of_measure": p.unit_of_measure,
-                }
-                for p in eq.properties
-            ],
+            "properties": [prop_to_dict(p) for p in eq.properties],
             "children": [eq_to_dict(c) for c in eq.children],
         }
 
@@ -43,22 +48,15 @@ def model_to_json(model) -> dict[str, Any]:
         return {
             "name": cls.name,
             "parent": cls.parent,
-            "properties": [
-                {
-                    "name": p.name,
-                    "value": p.value,
-                    "datatype": p.datatype,
-                    "unit_of_measure": p.unit_of_measure,
-                }
-                for p in cls.properties
-            ],
             "inheritance_chain": [c.name for c in cls.inheritance_chain],
+            "properties": [prop_to_dict(p) for p in cls.properties],
         }
 
     return {
         "equipment": [eq_to_dict(eq) for eq in model["equipment"]],
         "classes": [cls_to_dict(cls) for cls in model["classes"]],
         "warnings": model.get("warnings", []),
+        "config": model.get("config", {}),
     }
 
 

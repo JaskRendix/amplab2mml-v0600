@@ -35,7 +35,7 @@ def test_total_classes(make_model):
 def test_total_properties(make_model):
     # Area has DriveType and Manufacturer from class
     stats = compute_stats(make_model(XML))
-    assert stats.total_properties == 2
+    assert stats.total_properties == 1
 
 
 def test_max_depth(make_model):

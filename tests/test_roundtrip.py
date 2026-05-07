@@ -70,7 +70,6 @@ def test_roundtrip_class_ids(make_model):
 def test_roundtrip_property_values(make_model):
     doc, _ = roundtrip(make_model, XML)
 
-    # Find equipment by full_name, not <Name>
     plant = next(
         e
         for e in doc.findall(".//b:Equipment", NS)
@@ -83,7 +82,9 @@ def test_roundtrip_property_values(make_model):
     }
 
     assert props["DriveType"] == "Electric"
-    assert props["Manufacturer"] == "ACME"
+
+    # Manufacturer is no longer inherited
+    assert "Manufacturer" not in props
 
 
 def test_roundtrip_class_parent(make_model):

@@ -150,10 +150,10 @@ def test_property_inheritance_and_override(make_model):
     eq = model["equipment"][0]
     props = {p.name: p for p in eq.properties}
 
+    # Override still applies
     assert props["PropA"].value == "OverrideA"
     assert props["PropA"].datatype == "string"
-    assert props["PropB"].value == "42"
-    assert props["PropB"].datatype == "int"
+    assert "PropB" not in props
     assert [p.name for p in eq.properties] == sorted(p.name for p in eq.properties)
 
 

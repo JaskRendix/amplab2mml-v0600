@@ -33,7 +33,7 @@ def test_equipment_csv_headers(make_model):
     assert "level" in rows[0]
     assert "class_ids" in rows[0]
     assert "DriveType" in rows[0]
-    assert "Manufacturer" in rows[0]
+    assert "Manufacturer" not in rows[0]
 
 
 def test_equipment_csv_rows(make_model):

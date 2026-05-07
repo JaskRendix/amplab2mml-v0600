@@ -20,9 +20,6 @@ def validate_model(model: dict) -> list[str]:
     return warnings
 
 
-# ----------------------------------------------------------------------
-# EQUIPMENT VALIDATION
-# ----------------------------------------------------------------------
 def _validate_equipment(eq: Equipment, classes: set, warnings: list):
     # Unknown class → ERROR
     for cid in eq.class_ids:
@@ -41,9 +38,6 @@ def _validate_equipment(eq: Equipment, classes: set, warnings: list):
         _validate_equipment(child, classes, warnings)
 
 
-# ----------------------------------------------------------------------
-# CLASS INHERITANCE VALIDATION
-# ----------------------------------------------------------------------
 def _validate_class_inheritance(classes, warnings: list):
     class_names = {cls.name for cls in classes}
 
@@ -69,9 +63,6 @@ def _validate_class_inheritance(classes, warnings: list):
             warnings.append(f"ERROR: Class '{cls.name}' has circular inheritance")
 
 
-# ----------------------------------------------------------------------
-# UOM VALIDATION (WARNINGS ONLY)
-# ----------------------------------------------------------------------
 def _validate_uom(eq: Equipment, warnings: list):
     for prop in eq.properties:
         # Normalizer already set uom_warning
@@ -90,9 +81,6 @@ def _validate_uom(eq: Equipment, warnings: list):
         _validate_uom(child, warnings)
 
 
-# ----------------------------------------------------------------------
-# CLASS UOM VALIDATION (WARNINGS ONLY)
-# ----------------------------------------------------------------------
 def _validate_class_uom(classes, warnings: list):
     for cls in classes:
         for prop in cls.properties:

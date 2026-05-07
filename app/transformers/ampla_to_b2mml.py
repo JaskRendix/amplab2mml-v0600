@@ -83,8 +83,6 @@ class AmplaTransformer:
             name = node.get("name")
             full = f"{parent}.{name}" if parent and name else name
 
-            uom_map = self.config.get("uom_map", {})
-
             # Rule:
             # depth == 0 → container ONLY if it has children
             # depth == 0 AND no children → real class
@@ -121,8 +119,6 @@ class AmplaTransformer:
     ) -> list[EquipmentClass]:
         name = node.get("name")
         full_name = f"{parent}.{name}" if parent else name
-
-        uom_map = self.config.get("uom_map", {})
 
         props = [
             ClassProperty(
@@ -351,13 +347,14 @@ class AmplaTransformer:
 
     def _compute_class_inheritance(self, classes: list[EquipmentClass]):
         lookup = {cls.name: cls for cls in classes}
+
         for cls in classes:
             chain = []
-            curr = cls
-            while curr:
-                chain.append(curr)
-                curr = lookup.get(curr.parent)
-            cls.inheritance_chain = chain[::-1]
+            parent = lookup.get(cls.parent)
+            while parent:
+                chain.insert(0, parent)
+                parent = lookup.get(parent.parent)
+            cls.inheritance_chain = chain
 
     def _compute_full_names(self, eq_list: list[Equipment], parent: str | None):
         for eq in eq_list:

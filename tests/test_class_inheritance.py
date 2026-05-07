@@ -25,11 +25,8 @@ def test_class_inheritance_chain(make_model):
     assert set(classes) == {"Child", "Child.Grandchild"}
 
     # inheritance_chain is ordered from root → leaf
-    assert [c.name for c in classes["Child"].inheritance_chain] == ["Child"]
-    assert [c.name for c in classes["Child.Grandchild"].inheritance_chain] == [
-        "Child",
-        "Child.Grandchild",
-    ]
+    assert [c.name for c in classes["Child"].inheritance_chain] == []
+    assert [c.name for c in classes["Child.Grandchild"].inheritance_chain] == ["Child"]
 
 
 def test_flat_class_is_real_class(make_model):

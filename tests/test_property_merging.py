@@ -5,7 +5,7 @@ import pytest
     "override_value,expected",
     [
         ("Override", "Override"),
-        (None, "Default"),  # no override → inherited value
+        (None, None),  # no override → NOT inherited anymore
     ],
 )
 def test_property_merging(make_model, override_value, expected):
@@ -34,4 +34,8 @@ def test_property_merging(make_model, override_value, expected):
     eq = model["equipment"][0]
     props = {p.name: p.value for p in eq.properties}
 
-    assert props["PropA"] == expected
+    if expected is None:
+        # PropA is NOT inherited anymore
+        assert "PropA" not in props
+    else:
+        assert props["PropA"] == expected

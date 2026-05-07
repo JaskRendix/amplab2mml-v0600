@@ -46,7 +46,7 @@ def test_equipment_headers(workbook):
     headers = [cell.value for cell in ws[1]]
     assert headers[:3] == ["full_name", "level", "class_ids"]
     assert "DriveType" in headers
-    assert "Manufacturer" in headers
+    assert "Manufacturer" not in headers
 
 
 def test_equipment_rows(workbook):

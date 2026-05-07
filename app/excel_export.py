@@ -36,9 +36,6 @@ def _flatten_equipment(equipment_list) -> list:
     return flat
 
 
-# ------------------------------------------------------------
-# EQUIPMENT SHEET (value, uom, provenance)
-# ------------------------------------------------------------
 def _write_equipment_sheet(wb: Workbook, model: dict):
     ws = wb.active
     ws.title = "Equipment"
@@ -98,9 +95,6 @@ def _write_equipment_sheet(wb: Workbook, model: dict):
         ws.append(row)
 
 
-# ------------------------------------------------------------
-# CLASSES SHEET (value, uom only — NO provenance)
-# ------------------------------------------------------------
 def _write_classes_sheet(wb: Workbook, model: dict):
     ws = wb.create_sheet(title="Classes")
 
