@@ -259,7 +259,11 @@ class AmplaTransformer:
         for e in equipment:
             process(e)
 
-    def _run_structural_validation(self, equipment, ctx):
+    def _run_structural_validation(self, equipment, ctx) -> None:
+        validation_cfg = self.config.get("validation", {})
+        if not validation_cfg.get("enable_hierarchy", True):
+            return  # hierarchy validation disabled
+
         rules = self.config.get("hierarchy", {})
 
         def walk(node):
@@ -267,7 +271,7 @@ class AmplaTransformer:
             for child in node.children:
                 if child.level not in allowed:
                     ctx.warnings.append(
-                        f"Structural Violation: '{child.name}' ({child.level}) "
+                        f"WARNING: Structural Violation: '{child.name}' ({child.level}) "
                         f"cannot be child of '{node.name}' ({node.level}). "
                         f"Allowed: {allowed}"
                     )

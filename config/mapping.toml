@@ -66,3 +66,5 @@ hour = ["hrs"]
 version   = "V0600"
 namespace = "http://www.mesa.org/xml/B2MML-V0600"
 
+[validation]
+enable_hierarchy = false
