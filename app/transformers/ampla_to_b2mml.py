@@ -64,6 +64,7 @@ class AmplaTransformer:
         self._compute_class_inheritance(classes)
 
         equipment = self._parse_equipment(root, ctx)
+        self._run_structural_validation(equipment, ctx)
         self._compute_full_names(equipment, None)
         self._merge_properties(equipment, classes)
 
@@ -168,7 +169,7 @@ class AmplaTransformer:
             cid = a.get("classDefinitionId")
             resolved = ctx.class_id_lookup.get(cid)
             if resolved is None:
-                ctx.warnings.append(f"Unknown classDefinitionId '{cid}'")
+                ctx.warnings.append(f"ERROR: Unknown classDefinitionId '{cid}'")
             else:
                 class_ids.append(resolved)
 
@@ -178,7 +179,11 @@ class AmplaTransformer:
             level=level,
             class_ids=class_ids,
             overrides={
-                p.get("name"): {"value": p.text, "uom": p.get("unitOfMeasure")}
+                p.get("name"): {
+                    "value": p.text,
+                    "uom": p.get("unitOfMeasure"),
+                    "datatype": p.get("type"),
+                }
                 for p in node.xpath("Property")
             },
             children=[
@@ -192,7 +197,6 @@ class AmplaTransformer:
         self, equipment: list[Equipment], classes: list[EquipmentClass]
     ):
         class_lookup = {cls.name: cls for cls in classes}
-
         prop_cfg = self.config.get("properties", {})
         prefixes = prop_cfg.get("strip_prefixes", [])
         exclude = prop_cfg.get("exclude", [])
@@ -207,50 +211,81 @@ class AmplaTransformer:
         def process(eq: Equipment):
             merged: dict[str, EquipmentProperty] = {}
 
-            # 1. Inherit class properties
+            # 1. Inherit from Class Chain
             for class_name in eq.class_ids:
                 if cls := class_lookup.get(class_name):
+                    # Ancestors are applied root -> leaf, so leaf overrides root
                     for ancestor in cls.inheritance_chain:
                         for p in ancestor.properties:
                             fname = clean_name(p.name)
                             if fname in exclude:
                                 continue
+
                             merged[fname] = EquipmentProperty(
                                 name=fname,
                                 value=p.value,
                                 datatype=p.datatype,
                                 unit_of_measure=p.unit_of_measure,
+                                source=ancestor.name,  # Track the class name
                             )
 
-            # 2. Apply overrides
+            # 2. Apply Instance Overrides
             for k, ov in (eq.overrides or {}).items():
                 fname = clean_name(k)
                 if fname in exclude:
                     continue
 
-                # ov is ALWAYS OverrideValue now
-                value = ov.value
-                uom = ov.uom
-
+                # If it exists, update it; otherwise, create it
                 if fname in merged:
-                    merged[fname].value = value
-                    if uom is not None:
-                        merged[fname].unit_of_measure = uom
+                    merged[fname].value = ov.value
+                    if ov.uom:
+                        merged[fname].unit_of_measure = ov.uom
+                    merged[fname].source = "Instance Override"
                 else:
+                    # Inference logic if datatype is missing
+                    dtype = ov.datatype or self._infer_datatype_from_name(fname)
                     merged[fname] = EquipmentProperty(
                         name=fname,
-                        value=value,
-                        datatype=ov.datatype or "string",
-                        unit_of_measure=uom,
+                        value=ov.value,
+                        datatype=dtype,
+                        unit_of_measure=ov.uom,
+                        source="Instance Override",
                     )
 
             eq.properties = sorted(merged.values(), key=lambda p: p.name)
-
             for child in eq.children:
                 process(child)
 
         for e in equipment:
             process(e)
+
+    def _run_structural_validation(self, equipment, ctx):
+        rules = self.config.get("hierarchy", {})
+
+        def walk(node):
+            allowed = rules.get(node.level, [])
+            for child in node.children:
+                if child.level not in allowed:
+                    ctx.warnings.append(
+                        f"Structural Violation: '{child.name}' ({child.level}) "
+                        f"cannot be child of '{node.name}' ({node.level}). "
+                        f"Allowed: {allowed}"
+                    )
+                walk(child)
+
+        for e in equipment:
+            walk(e)
+
+    def _infer_datatype_from_name(self, name: str) -> str:
+        """Optional: Basic inference if the Ampla XML didn't provide a type."""
+        name_lower = name.lower()
+        if any(x in name_lower for x in ["date", "time", "at"]):
+            return "datetime"
+        if any(x in name_lower for x in ["is", "has", "enabled"]):
+            return "boolean"
+        if any(x in name_lower for x in ["count", "qty", "amount"]):
+            return "decimal"
+        return self.config.get("datatypes", {}).get("fallback", "string")
 
     def _normalize_uom(self, classes, equipment, ctx):
         # Normalize class properties

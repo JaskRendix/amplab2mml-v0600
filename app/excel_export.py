@@ -36,6 +36,9 @@ def _flatten_equipment(equipment_list) -> list:
     return flat
 
 
+# ------------------------------------------------------------
+# EQUIPMENT SHEET (value, uom, provenance)
+# ------------------------------------------------------------
 def _write_equipment_sheet(wb: Workbook, model: dict):
     ws = wb.active
     ws.title = "Equipment"
@@ -51,15 +54,18 @@ def _write_equipment_sheet(wb: Workbook, model: dict):
                 prop_names.append(p.name)
                 seen.add(p.name)
 
+    # Headers
     headers = ["full_name", "level", "class_ids"]
     for name in prop_names:
         headers.append(name)  # value
         headers.append(f"{name}_uom")  # unit of measure
+        headers.append(f"{name}_source")  # provenance
 
     ws.append(headers)
     for cell in ws[1]:
         cell.font = Font(bold=True)
 
+    # Rows
     for eq in flat:
         prop_map = {p.name: p for p in eq.properties}
 
@@ -72,24 +78,35 @@ def _write_equipment_sheet(wb: Workbook, model: dict):
         for name in prop_names:
             prop = prop_map.get(name)
             if prop:
+                # value
                 row.append("" if prop.value is None else prop.value)
+
+                # uom (normalized if available)
                 uom = (
                     prop.normalized_unit_of_measure
                     if getattr(prop, "normalized_unit_of_measure", None)
                     else prop.unit_of_measure
                 )
                 row.append(uom or "")
+
+                # provenance
+                row.append(prop.source or "")
             else:
-                row.extend(["", ""])
+                # value, uom, source
+                row.extend(["", "", ""])
 
         ws.append(row)
 
 
+# ------------------------------------------------------------
+# CLASSES SHEET (value, uom only — NO provenance)
+# ------------------------------------------------------------
 def _write_classes_sheet(wb: Workbook, model: dict):
     ws = wb.create_sheet(title="Classes")
 
     classes = model["classes"]
 
+    # Collect all class property names
     prop_names = []
     seen = set()
     for cls in classes:
@@ -98,6 +115,7 @@ def _write_classes_sheet(wb: Workbook, model: dict):
                 prop_names.append(p.name)
                 seen.add(p.name)
 
+    # Headers
     headers = ["name", "parent"]
     for name in prop_names:
         headers.append(name)
@@ -107,6 +125,7 @@ def _write_classes_sheet(wb: Workbook, model: dict):
     for cell in ws[1]:
         cell.font = Font(bold=True)
 
+    # Rows
     for cls in classes:
         prop_map = {p.name: p for p in cls.properties}
 
@@ -115,7 +134,10 @@ def _write_classes_sheet(wb: Workbook, model: dict):
         for name in prop_names:
             prop = prop_map.get(name)
             if prop:
+                # value
                 row.append("" if prop.value is None else prop.value)
+
+                # uom (normalized if available)
                 uom = (
                     prop.normalized_unit_of_measure
                     if getattr(prop, "normalized_unit_of_measure", None)
@@ -123,6 +145,7 @@ def _write_classes_sheet(wb: Workbook, model: dict):
                 )
                 row.append(uom or "")
             else:
+                # value, uom
                 row.extend(["", ""])
 
         ws.append(row)

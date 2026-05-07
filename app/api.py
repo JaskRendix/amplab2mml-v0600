@@ -184,6 +184,11 @@ async def convert_html(file: UploadFile, request: Request) -> Response:
 @app.post("/validate", tags=["validate"])
 async def validate(file: UploadFile, request: Request) -> dict[str, Any]:
     model = await load_model(file, request, "/validate")
-    validation_warnings = validate_model(model)
-    all_warnings = model.get("warnings", []) + validation_warnings
-    return {"warnings": all_warnings, "valid": len(all_warnings) == 0}
+
+    # model["warnings"] already contains transformer + validator warnings
+    all_warnings = model.get("warnings", [])
+
+    # ERROR warnings invalidate the model
+    has_errors = any(w.startswith("ERROR:") for w in all_warnings)
+
+    return {"warnings": all_warnings, "valid": not has_errors}
