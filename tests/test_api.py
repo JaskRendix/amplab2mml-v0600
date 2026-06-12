@@ -485,3 +485,36 @@ def test_validate_with_warnings(tmp_path):
     assert "warnings" in data
     assert len(data["warnings"]) > 0
     assert data["valid"] is False
+
+
+def test_validate_schema_ok():
+    xml = open("tests/data/sample_ampla.xml").read()
+
+    response = client.post(
+        "/validate/schema",
+        files={"file": ("sample.xml", xml, "application/xml")},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert "valid" in data
+    assert data["valid"] is False
+    assert "errors" in data
+    assert isinstance(data["errors"], str)
+
+
+def test_validate_schema_invalid_xml():
+    bad_xml = "<Ampla><Item id='1'></Item></Ampla>"
+
+    response = client.post(
+        "/validate/schema",
+        files={"file": ("bad.xml", bad_xml, "application/xml")},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["valid"] is True
+    assert "errors" in data
+    assert isinstance(data["errors"], str)

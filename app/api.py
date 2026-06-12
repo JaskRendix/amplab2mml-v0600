@@ -1,8 +1,10 @@
 from importlib.metadata import version
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse, Response
+from lxml import etree
 
 from app.builders.b2mml_builder import build_b2mml_xml
 from app.cli import model_to_json
@@ -22,6 +24,15 @@ from app.stats import compute_stats
 from app.validators import validate_model
 
 PIPELINE_VERSION = version("ampla-b2mml-v0600")
+
+
+def load_schema():
+    base = Path(__file__).resolve().parent.parent / "schemas"
+    equipment_xsd = base / "B2MML-V0600-Equipment.xsd"
+
+    parser = etree.XMLParser(load_dtd=False, resolve_entities=False)
+    schema_doc = etree.parse(str(equipment_xsd), parser)
+    return etree.XMLSchema(schema_doc)
 
 
 app = FastAPI(
@@ -192,3 +203,15 @@ async def validate(file: UploadFile, request: Request) -> dict[str, Any]:
     has_errors = any(w.startswith("ERROR:") for w in all_warnings)
 
     return {"warnings": all_warnings, "valid": not has_errors}
+
+
+@app.post("/validate/schema", tags=["validate"])
+async def validate_schema(file: UploadFile, request: Request):
+    model = await load_model(file, request, "/validate/schema")
+    xml = build_b2mml_xml(model, config=model.get("config", {}))
+    doc = etree.fromstring(xml.encode())
+
+    schema = load_schema()
+    valid = schema.validate(doc)
+
+    return {"valid": valid, "errors": str(schema.error_log)}
