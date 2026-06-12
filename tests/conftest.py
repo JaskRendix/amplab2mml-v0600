@@ -30,21 +30,27 @@ def make_model():
 
 @pytest.fixture
 def make_property():
-    """
-    Creates an EquipmentProperty instance for unit tests.
-    """
-
     def _make_property(
-        name="Prop",
+        name="X",
+        value=None,
         datatype="string",
-        value="X",
         unit_of_measure="",
+        raw_unit_of_measure=None,
+        normalized_unit_of_measure=None,
+        uom_warning=None,
+        children=None,
+        attributes=None,
     ):
         return EquipmentProperty(
             name=name,
             value=value,
             datatype=datatype,
             unit_of_measure=unit_of_measure,
+            raw_unit_of_measure=raw_unit_of_measure,
+            normalized_unit_of_measure=normalized_unit_of_measure,
+            uom_warning=uom_warning,
+            children=children or [],
+            attributes=attributes or {},
         )
 
     return _make_property

@@ -13,6 +13,7 @@ class EquipmentProperty(BaseModel):
     normalized_unit_of_measure: str | None = None
     uom_warning: str | None = None
     children: list["EquipmentProperty"] = []
+    attributes: dict[str, str] = {}
 
 
 class ClassProperty(BaseModel):

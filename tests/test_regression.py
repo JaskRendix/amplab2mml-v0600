@@ -179,3 +179,23 @@ def test_diff_engine_detects_changes():
 
     diff = diff_models(model1, model2)
     assert diff  # non‑empty
+
+
+def test_property_value_attributes(make_property):
+    prop = make_property(
+        name="Speed",
+        datatype="float",
+        value="12.5",
+        attributes={"unitCode": "m/s", "format": "float32"},
+    )
+
+    from app.builders.b2mml_builder import build_property
+
+    el = build_property("EquipmentProperty", prop, {})
+
+    value_el = el.find(".//b:ValueFloat", NS)
+    assert value_el is not None
+
+    # attribute presence
+    assert value_el.get("unitCode") == "m/s"
+    assert value_el.get("format") == "float32"

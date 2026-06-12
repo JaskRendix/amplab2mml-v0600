@@ -196,7 +196,12 @@ def build_property(tag: str, prop: Any, config: dict[str, Any]) -> etree._Elemen
     dtype = (prop.datatype or "").lower()
     v_tag = type_map.get(dtype, "ValueString")
 
-    _sub(val, v_tag).text = "" if prop.value is None else str(prop.value)
+    value_el = _sub(val, v_tag)
+    value_el.text = "" if prop.value is None else str(prop.value)
+
+    for k, v in getattr(prop, "attributes", {}).items():
+        value_el.set(k, v)
+
     _sub(val, "DataType").text = (prop.datatype or "string").lower()
 
     uom = getattr(prop, "normalized_unit_of_measure", None) or prop.unit_of_measure
