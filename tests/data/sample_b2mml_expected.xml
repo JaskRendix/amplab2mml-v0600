@@ -1,4 +1,4 @@
-<ShowEquipmentInformation xmlns="http://www.mesa.org/xml/B2MML-V0600" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ShowEquipmentInformation xmlns="http://www.mesa.org/xml/B2MML-V0600" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" releaseID="0600" versionID="0600">
   <ApplicationArea>
     <CreationDateTime>2026-05-07T15:31:18.585237Z</CreationDateTime>
   </ApplicationArea>
@@ -38,13 +38,13 @@
       </EquipmentClass>
       <Equipment>
         <ID>AcmeMining</ID>
-        <EquipmentElementLevel>Enterprise</EquipmentElementLevel>
+        <EquipmentLevel>Enterprise</EquipmentLevel>
         <Equipment>
           <ID>AcmeMining.NorthMine</ID>
-          <EquipmentElementLevel>Site</EquipmentElementLevel>
+          <EquipmentLevel>Site</EquipmentLevel>
           <Equipment>
             <ID>AcmeMining.NorthMine.CrusherPlant</ID>
-            <EquipmentElementLevel>Area</EquipmentElementLevel>
+            <EquipmentLevel>Area</EquipmentLevel>
             <EquipmentClassID>Crusher.JawCrusher</EquipmentClassID>
             <EquipmentProperty>
               <ID>DriveType</ID>
@@ -73,7 +73,7 @@
           </Equipment>
           <Equipment>
             <ID>AcmeMining.NorthMine.ConveyorLoop</ID>
-            <EquipmentElementLevel>Area</EquipmentElementLevel>
+            <EquipmentLevel>Area</EquipmentLevel>
             <EquipmentClassID>Crusher.JawCrusher</EquipmentClassID>
             <EquipmentProperty>
               <ID>DriveType</ID>
@@ -94,21 +94,21 @@
           </Equipment>
           <Equipment>
             <ID>AcmeMining.NorthMine.WasteStorage</ID>
-            <EquipmentElementLevel>Area</EquipmentElementLevel>
+            <EquipmentLevel>Area</EquipmentLevel>
           </Equipment>
         </Equipment>
         <Equipment>
           <ID>AcmeMining.SouthMine</ID>
-          <EquipmentElementLevel>Site</EquipmentElementLevel>
+          <EquipmentLevel>Site</EquipmentLevel>
           <Equipment>
             <ID>AcmeMining.SouthMine.ProcessPlant</ID>
-            <EquipmentElementLevel>Area</EquipmentElementLevel>
+            <EquipmentLevel>Area</EquipmentLevel>
             <EquipmentClassID>Crusher</EquipmentClassID>
           </Equipment>
         </Equipment>
         <Equipment>
           <ID>AcmeMining.Applications</ID>
-          <EquipmentElementLevel>Other</EquipmentElementLevel>
+          <EquipmentLevel>Other</EquipmentLevel>
         </Equipment>
       </Equipment>
     </EquipmentInformation>

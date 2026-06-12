@@ -1,14 +1,20 @@
+from __future__ import annotations
+
 from datetime import UTC, datetime
+from typing import Any
 
 from lxml import etree
 
 NS = "http://www.mesa.org/xml/B2MML-V0600"
 
 
-def build_b2mml_xml(model, config):
+def build_b2mml_xml(model: dict[str, Any], config: dict[str, Any]) -> str:
+    # Root element with required B2MML attributes
     root = etree.Element(
         "ShowEquipmentInformation",
         nsmap={None: NS, "xsi": "http://www.w3.org/2001/XMLSchema-instance"},
+        releaseID="0600",
+        versionID="0600",
     )
 
     # ApplicationArea
@@ -35,7 +41,7 @@ def build_b2mml_xml(model, config):
     return etree.tostring(root, pretty_print=True, encoding="unicode")
 
 
-def build_class_xml(cls, config):
+def build_class_xml(cls: Any, config: dict[str, Any]) -> etree._Element:
     c = etree.Element("EquipmentClass")
     etree.SubElement(c, "ID").text = cls.name
 
@@ -45,11 +51,13 @@ def build_class_xml(cls, config):
     return c
 
 
-def build_equipment_xml(eq, config):
+def build_equipment_xml(eq: Any, config: dict[str, Any]) -> etree._Element:
     e = etree.Element("Equipment")
 
     etree.SubElement(e, "ID").text = eq.full_name
-    etree.SubElement(e, "EquipmentElementLevel").text = eq.level
+
+    # Correct B2MML tag
+    etree.SubElement(e, "EquipmentLevel").text = eq.level
 
     # Class references
     for cid in eq.class_ids:
@@ -66,14 +74,14 @@ def build_equipment_xml(eq, config):
     return e
 
 
-def build_property(tag, prop, config):
+def build_property(tag: str, prop: Any, config: dict[str, Any]) -> etree._Element:
     p_el = etree.Element(tag)
     etree.SubElement(p_el, "ID").text = prop.name
 
     val_wrap = etree.SubElement(p_el, "Value")
 
     # Typed value tag
-    type_map = {
+    type_map: dict[str, str] = {
         "int": "ValueInt",
         "float": "ValueFloat",
         "boolean": "ValueBoolean",
@@ -81,6 +89,7 @@ def build_property(tag, prop, config):
         "decimal": "ValueDecimal",
     }
     v_tag = type_map.get(prop.datatype, "ValueString")
+
     etree.SubElement(val_wrap, v_tag).text = (
         "" if prop.value is None else str(prop.value)
     )
@@ -88,10 +97,9 @@ def build_property(tag, prop, config):
     # DataType
     etree.SubElement(val_wrap, "DataType").text = prop.datatype or "string"
 
-    uom = (
-        prop.normalized_unit_of_measure
-        if getattr(prop, "normalized_unit_of_measure", None)
-        else prop.unit_of_measure
+    # Unit of Measure
+    uom: str | None = (
+        getattr(prop, "normalized_unit_of_measure", None) or prop.unit_of_measure
     )
     etree.SubElement(val_wrap, "UnitOfMeasure").text = uom or ""
 

@@ -1,6 +1,6 @@
 # Ampla → B2MML Mapping Configuration
 # -----------------------------------
-# Maps Ampla internal folder types to ISA‑95 EquipmentElementLevel values.
+# Maps Ampla internal folder types to ISA‑95 EquipmentLevel values.
 # This file allows integrators to adjust behaviour without modifying code.
 
 [level_map]
@@ -39,7 +39,7 @@ exclude = [
 rename = {}
 
 # Optional: enforce required properties (schema‑level expectations)
-required = ["ID", "EquipmentElementLevel"]
+required = ["ID", "EquipmentLevel"]
 
 [datatypes]
 # Maps Ampla/System types to B2MML Property Data Types
