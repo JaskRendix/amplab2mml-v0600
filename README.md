@@ -296,6 +296,10 @@ http://localhost:8000
 
 ## **License**
 
-BSD 3‑Clause License.  
-Includes derivative work from the original  
-*Ampla_to_Equipment_B2MML.xslt* (2005), also under BSD 3‑Clause.
+BSD 3‑Clause License.
+
+### Third‑Party Notices
+
+This project distributes the B2MML V0600 XML Schema Definition files.  
+These files are copyrighted by MESA International and are provided under the MESA International License Agreement.  
+They are not covered by this project's BSD license.
