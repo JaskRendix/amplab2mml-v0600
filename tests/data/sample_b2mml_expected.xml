@@ -1,11 +1,113 @@
 <ShowEquipmentInformation xmlns="http://www.mesa.org/xml/B2MML-V0600" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" releaseID="0600" versionID="0600">
   <ApplicationArea>
-    <CreationDateTime>2026-05-07T15:31:18.585237Z</CreationDateTime>
+    <Sender>
+      <LogicalID>AMPLA</LogicalID>
+      <ComponentID>AmplaToB2MML</ComponentID>
+    </Sender>
+    <Receiver>
+      <LogicalID>B2MML</LogicalID>
+      <ComponentID>Consumer</ComponentID>
+    </Receiver>
+    <CreationDateTime>2026-06-12T14:27:12.091488Z</CreationDateTime>
   </ApplicationArea>
   <DataArea>
     <Show/>
     <EquipmentInformation>
-      <PublishedDate>2026-05-07T15:31:18.585266Z</PublishedDate>
+      <PublishedDate>2026-06-12T14:27:12.091513Z</PublishedDate>
+      <Equipment>
+        <ID>AcmeMining</ID>
+        <EquipmentLevel>
+          <EquipmentID>LEVEL</EquipmentID>
+          <EquipmentElementLevel>Enterprise</EquipmentElementLevel>
+        </EquipmentLevel>
+        <Equipment>
+          <ID>AcmeMining.NorthMine</ID>
+          <EquipmentLevel>
+            <EquipmentID>LEVEL</EquipmentID>
+            <EquipmentElementLevel>Site</EquipmentElementLevel>
+          </EquipmentLevel>
+          <Equipment>
+            <ID>AcmeMining.NorthMine.CrusherPlant</ID>
+            <EquipmentLevel>
+              <EquipmentID>LEVEL</EquipmentID>
+              <EquipmentElementLevel>Area</EquipmentElementLevel>
+            </EquipmentLevel>
+            <EquipmentProperty>
+              <ID>DriveType</ID>
+              <Value>
+                <ValueString>Electric</ValueString>
+                <DataType>string</DataType>
+              </Value>
+            </EquipmentProperty>
+            <EquipmentProperty>
+              <ID>Manufacturer</ID>
+              <Value>
+                <ValueString>Unknown</ValueString>
+                <DataType>string</DataType>
+              </Value>
+            </EquipmentProperty>
+            <EquipmentProperty>
+              <ID>MaxThroughput</ID>
+              <Value>
+                <ValueString>850</ValueString>
+                <DataType>string</DataType>
+              </Value>
+            </EquipmentProperty>
+            <EquipmentClassID>Crusher.JawCrusher</EquipmentClassID>
+          </Equipment>
+          <Equipment>
+            <ID>AcmeMining.NorthMine.ConveyorLoop</ID>
+            <EquipmentLevel>
+              <EquipmentID>LEVEL</EquipmentID>
+              <EquipmentElementLevel>Area</EquipmentElementLevel>
+            </EquipmentLevel>
+            <EquipmentProperty>
+              <ID>DriveType</ID>
+              <Value>
+                <ValueString>Electric</ValueString>
+                <DataType>string</DataType>
+              </Value>
+            </EquipmentProperty>
+            <EquipmentProperty>
+              <ID>Manufacturer</ID>
+              <Value>
+                <ValueString>Unknown</ValueString>
+                <DataType>string</DataType>
+              </Value>
+            </EquipmentProperty>
+            <EquipmentClassID>Crusher.JawCrusher</EquipmentClassID>
+          </Equipment>
+          <Equipment>
+            <ID>AcmeMining.NorthMine.WasteStorage</ID>
+            <EquipmentLevel>
+              <EquipmentID>LEVEL</EquipmentID>
+              <EquipmentElementLevel>Area</EquipmentElementLevel>
+            </EquipmentLevel>
+          </Equipment>
+        </Equipment>
+        <Equipment>
+          <ID>AcmeMining.SouthMine</ID>
+          <EquipmentLevel>
+            <EquipmentID>LEVEL</EquipmentID>
+            <EquipmentElementLevel>Site</EquipmentElementLevel>
+          </EquipmentLevel>
+          <Equipment>
+            <ID>AcmeMining.SouthMine.ProcessPlant</ID>
+            <EquipmentLevel>
+              <EquipmentID>LEVEL</EquipmentID>
+              <EquipmentElementLevel>Area</EquipmentElementLevel>
+            </EquipmentLevel>
+            <EquipmentClassID>Crusher</EquipmentClassID>
+          </Equipment>
+        </Equipment>
+        <Equipment>
+          <ID>AcmeMining.Applications</ID>
+          <EquipmentLevel>
+            <EquipmentID>LEVEL</EquipmentID>
+            <EquipmentElementLevel>Other</EquipmentElementLevel>
+          </EquipmentLevel>
+        </Equipment>
+      </Equipment>
       <EquipmentClass>
         <ID>Crusher</ID>
         <EquipmentClassProperty>
@@ -13,7 +115,6 @@
           <Value>
             <ValueString>Electric</ValueString>
             <DataType>string</DataType>
-            <UnitOfMeasure></UnitOfMeasure>
           </Value>
         </EquipmentClassProperty>
         <EquipmentClassProperty>
@@ -21,7 +122,6 @@
           <Value>
             <ValueString>Unknown</ValueString>
             <DataType>string</DataType>
-            <UnitOfMeasure></UnitOfMeasure>
           </Value>
         </EquipmentClassProperty>
       </EquipmentClass>
@@ -32,85 +132,9 @@
           <Value>
             <ValueInt>750</ValueInt>
             <DataType>int</DataType>
-            <UnitOfMeasure></UnitOfMeasure>
           </Value>
         </EquipmentClassProperty>
       </EquipmentClass>
-      <Equipment>
-        <ID>AcmeMining</ID>
-        <EquipmentLevel>Enterprise</EquipmentLevel>
-        <Equipment>
-          <ID>AcmeMining.NorthMine</ID>
-          <EquipmentLevel>Site</EquipmentLevel>
-          <Equipment>
-            <ID>AcmeMining.NorthMine.CrusherPlant</ID>
-            <EquipmentLevel>Area</EquipmentLevel>
-            <EquipmentClassID>Crusher.JawCrusher</EquipmentClassID>
-            <EquipmentProperty>
-              <ID>DriveType</ID>
-              <Value>
-                <ValueString>Electric</ValueString>
-                <DataType>string</DataType>
-                <UnitOfMeasure></UnitOfMeasure>
-              </Value>
-            </EquipmentProperty>
-            <EquipmentProperty>
-              <ID>Manufacturer</ID>
-              <Value>
-                <ValueString>Unknown</ValueString>
-                <DataType>string</DataType>
-                <UnitOfMeasure></UnitOfMeasure>
-              </Value>
-            </EquipmentProperty>
-            <EquipmentProperty>
-              <ID>MaxThroughput</ID>
-              <Value>
-                <ValueString>850</ValueString>
-                <DataType>string</DataType>
-                <UnitOfMeasure></UnitOfMeasure>
-              </Value>
-            </EquipmentProperty>
-          </Equipment>
-          <Equipment>
-            <ID>AcmeMining.NorthMine.ConveyorLoop</ID>
-            <EquipmentLevel>Area</EquipmentLevel>
-            <EquipmentClassID>Crusher.JawCrusher</EquipmentClassID>
-            <EquipmentProperty>
-              <ID>DriveType</ID>
-              <Value>
-                <ValueString>Electric</ValueString>
-                <DataType>string</DataType>
-                <UnitOfMeasure></UnitOfMeasure>
-              </Value>
-            </EquipmentProperty>
-            <EquipmentProperty>
-              <ID>Manufacturer</ID>
-              <Value>
-                <ValueString>Unknown</ValueString>
-                <DataType>string</DataType>
-                <UnitOfMeasure></UnitOfMeasure>
-              </Value>
-            </EquipmentProperty>
-          </Equipment>
-          <Equipment>
-            <ID>AcmeMining.NorthMine.WasteStorage</ID>
-            <EquipmentLevel>Area</EquipmentLevel>
-          </Equipment>
-        </Equipment>
-        <Equipment>
-          <ID>AcmeMining.SouthMine</ID>
-          <EquipmentLevel>Site</EquipmentLevel>
-          <Equipment>
-            <ID>AcmeMining.SouthMine.ProcessPlant</ID>
-            <EquipmentLevel>Area</EquipmentLevel>
-            <EquipmentClassID>Crusher</EquipmentClassID>
-          </Equipment>
-        </Equipment>
-        <Equipment>
-          <ID>AcmeMining.Applications</ID>
-          <EquipmentLevel>Other</EquipmentLevel>
-        </Equipment>
-      </Equipment>
     </EquipmentInformation>
   </DataArea>
 </ShowEquipmentInformation>

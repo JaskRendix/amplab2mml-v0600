@@ -51,9 +51,9 @@ def test_roundtrip_equipment_ids(make_model):
 
 def test_roundtrip_equipment_levels(make_model):
     doc, _ = roundtrip(make_model, XML)
-    levels = [el.text for el in doc.findall(".//b:EquipmentLevel", NS)]
-
-    # No type= attributes → all become "Other"
+    levels = [
+        el.text for el in doc.findall(".//b:EquipmentLevel/b:EquipmentElementLevel", NS)
+    ]
     assert levels == ["Other", "Other"]
 
 

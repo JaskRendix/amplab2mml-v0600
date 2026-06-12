@@ -239,7 +239,11 @@ class AmplaTransformer:
                     merged[fname].source = "Instance Override"
                 else:
                     # Inference logic if datatype is missing
-                    dtype = ov.datatype or self._infer_datatype_from_name(fname)
+                    dtype = (
+                        self._translate_datatype(ov.datatype)
+                        if ov.datatype
+                        else self._infer_datatype_from_name(fname)
+                    )
                     merged[fname] = EquipmentProperty(
                         name=fname,
                         value=ov.value,
@@ -321,7 +325,8 @@ class AmplaTransformer:
 
     def _translate_datatype(self, dt: str | None) -> str:
         mapping = self.config.get("datatypes", {})
-        return mapping.get(dt or "", mapping.get("fallback", "string"))
+        mapped = mapping.get(dt or "", mapping.get("fallback", "string"))
+        return mapped.lower()
 
     def _build_class_id_lookup(self, root: etree._Element) -> dict[str, str]:
         lookup: dict[str, str] = {}

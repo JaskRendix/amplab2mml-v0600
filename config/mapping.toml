@@ -1,28 +1,27 @@
-# Ampla → B2MML Mapping Configuration
-# -----------------------------------
-# Maps Ampla internal folder types to ISA‑95 EquipmentLevel values.
-# This file allows integrators to adjust behaviour without modifying code.
+# Ampla → B2MML Mapping Configuration (V0600)
+# -------------------------------------------
+# Controls datatype normalization, level mapping, hierarchy rules,
+# property cleanup, UOM normalization, and B2MML metadata.
 
 [level_map]
-# Maps Ampla Internal Types to ISA‑95 Equipment Element Levels
+# Maps Ampla internal folder types to ISA‑95 Equipment Element Levels
 "Citect.Ampla.Isa95.EnterpriseFolder" = "Enterprise"
 "Citect.Ampla.Isa95.SiteFolder"       = "Site"
 "Citect.Ampla.Isa95.AreaFolder"       = "Area"
 "Citect.Ampla.General.Server.ApplicationsFolder" = "Other"
 
 [hierarchy]
-# ISA‑95 Structural Validation Rules
-# Defines which child levels are legally allowed under a parent level
+# ISA‑95 structural validation rules (optional)
 "Enterprise" = ["Enterprise", "Site"]
 "Site"       = ["Area"]
 "Area"       = ["WorkCenter", "ProcessCell", "ProductionLine", "Other"]
 "Other"      = ["Other"]
 
 [properties]
-# Cleanup rules to ensure the B2MML model remains "Pure"
+# Prefixes removed from property names
 strip_prefixes = ["Class.", "Local.", "Global.", "Reporting."]
 
-# Properties to ignore (technical metadata that doesn't belong in B2MML)
+# Properties excluded from B2MML output
 exclude = [
     "IsSelected",
     "Color",
@@ -33,16 +32,14 @@ exclude = [
     "SequenceID"
 ]
 
-# Optional: rename properties for cleaner B2MML output
-# "FeedRate" = "Feed_Rate"
-# "TempSP"   = "Temperature_Setpoint"
+# Optional renaming rules
 rename = {}
 
-# Optional: enforce required properties (schema‑level expectations)
+# Required properties for B2MML EquipmentProperty
 required = ["ID", "EquipmentLevel"]
 
 [datatypes]
-# Maps Ampla/System types to B2MML Property Data Types
+# Normalized datatype mapping for V0600 ValueType generation
 "System.String"   = "string"
 "System.Int32"    = "int"
 "System.Double"   = "float"
@@ -50,7 +47,7 @@ required = ["ID", "EquipmentLevel"]
 "System.DateTime" = "datetime"
 "System.Decimal"  = "decimal"
 
-# Fallback if datatype is unknown
+# Fallback for unknown datatypes
 fallback = "string"
 
 [uom.map]
@@ -62,7 +59,6 @@ percent = ["pct"]
 hour = ["hrs"]
 
 [metadata]
-# B2MML Header info
 version   = "V0600"
 namespace = "http://www.mesa.org/xml/B2MML-V0600"
 
