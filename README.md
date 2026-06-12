@@ -111,6 +111,7 @@ classDiagram
         +raw_unit_of_measure: String
         +uom_warning: String
         +children: List
+        +attributes: Dict
     }
 
     Equipment "1" *-- "many" Equipment : children
